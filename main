@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+#define SEP ";"
+
+int main (int argc, char **argv) {
+	
+	FILE *file;
+	char buffer[MAX];
+	int c;
+	file = fopen("phonebook.csv", "r+");
+	if(file == NULL) {
+		printf("Error opening file\n");
+		//error
+	}
+	for(c=0;c<4;c++)
+	{
+	fgets(buffer,MAX,file);
+	printf("%s", buffer);
+	}
+	
+	   
+   fclose(file);
+   return 0;
+}
