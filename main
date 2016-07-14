@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
 	
 	FILE *file;
 	char buffer[MAX];
-	int c;
+	int c, i =1;
 	file = fopen("phonebook.csv", "r+");
 	if(file == NULL) {
 		printf("Error opening file\n");
@@ -27,15 +27,14 @@ int main (int argc, char **argv) {
 
 	while(!feof(file))  
 	{
-	printf("%c", c = fgetc(file));	
+		
 //	fgets(buffer,MAX,file);
 //	printf("%s", buffer);
-    if(c == SEP) {
-    	
-    	
-	}
-	}
-		   
+    if(i != 1 && !feof(file)){
+     printf("%c", c = fgetc(file));
+     i++;
+    }
+  }		   
    fclose(file);
    
    return 0;
