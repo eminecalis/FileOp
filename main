@@ -18,22 +18,28 @@ int main (int argc, char **argv) {
 	
 	FILE *file;
 	char buffer[MAX];
-	int c, i =1;
+	int c, i =0;
 	file = fopen("phonebook.csv", "r+");
 	if(file == NULL) {
 		printf("Error opening file\n");
 		//error
 	}
 
-	while(!feof(file))  
+	
+	while(i && !feof(file))  
 	{
+	c = fgetc(file);
 		
 //	fgets(buffer,MAX,file);
 //	printf("%s", buffer);
-    if(i != 1 && !feof(file)){
-     printf("%c", c = fgetc(file));
-     i++;
-    }
+   	if (c == '\n') 
+   {	 
+	  i++;
+	  if (i != 0) {
+	  	printf("%c", c );
+	  }
+	
+   }
   }		   
    fclose(file);
    
