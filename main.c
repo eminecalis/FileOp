@@ -8,7 +8,7 @@
 #define SEP ";"
 #define LEN 20
 
-/*Das Prorgamm soll die eingelesenen Zeilen am Semikolon aufsplitten und ein ein struct ablegen, welches du mit malloc allocierst*/
+/*Das Prorgamm soll die eingelesenen Zeilen am Semikolon aufsplitten und in ein struct ablegen, welches du mit malloc allocierst*/
 
 typedef struct contact {
   int index;
@@ -17,17 +17,25 @@ typedef struct contact {
 
 } Contact;
 
+typedef struct list{
+	struct list *prev;
+	struct list *next;
+	 struct contact* data;	
+}List;
+
 int main (int argc, char **argv) {
 
   FILE *file;
   char buffer[MAX];
-  int c, i = 0, zaehler = 0;
+  int c, zeilenNummer = 0, zaehler = 0;
+ // Contact *contact;
+  
+  
   file = fopen ("phonebook.csv", "r+");
   if (file == NULL) {
     printf ("Error opening file\n");
     //error
   }
-
 
   while (!feof (file)) {
     c = fgetc (file);
@@ -35,49 +43,51 @@ int main (int argc, char **argv) {
     buffer[zaehler] = (char) c;
     zaehler++;
 
-    if (c == '\n') {
+    if (c == '\n') {					// c ist ein Int wie kann man es direkt mit einem char vergleichen???
       buffer[zaehler] = '\0';
-      Contact contact;
+    //  Contact *contact;
+      List *mylist;
+      
 
-      if (i != 0) {
+      if (zeilenNummer != 0) {
         //printf ("%s", buffer);
 
         //sscanf(buffer, "%i;%s;%s", &contact.index, contact.name, contact.telefonnumber);
-
+        
         char *token;
-
-        //     strtok(buffer, SEP);
-
-        char *currentToken;
+       // char *currentToken;
         int tokenZaehler = 0;
-
-        token = strtok_r (buffer, SEP, &currentToken);
+        
+        mylist = malloc(sizeof(List));
+        token = strtok (buffer, SEP);
 
         while (token != NULL) {
           if( tokenZaehler == 0) {
-            sscanf(token, "%i", &contact.index);
+            sscanf(token, "%i", &(List->data->index)); 
           }
           if( tokenZaehler == 1) {
-            sscanf(token, "%ms", &contact.name);
+            sscanf(token, "%ms", &(List->data->name); 
           }
           if( tokenZaehler == 2) {
-            contact.telefonnumber = malloc (strlen (token));
-            sscanf(token, "%s", contact.telefonnumber);
+            contact->telefonnumber = malloc (strlen (token));
+            sscanf(token, "%s", (List->data->telefonnumber);
           }
           tokenZaehler++;
 
-          token = strtok_r (NULL, SEP, &currentToken);
+          token = strtok (NULL, SEP);
        }
-
-        printf("%i %s %s\n", contact.index, contact.name, contact.telefonnumber);
+        List->next = mylist;
+        List->prev = NULL;
+        printf("%i %s %s\n", contact->index, contact->name, contact->telefonnumber);
       }
       zaehler = 0;
-      i++;
+      zeilenNummer++;
+    
     }
+ 
   }
 
   fclose (file);
 
   return 0;
 }
-	
