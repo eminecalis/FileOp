@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "list.h"
 
 #define MAX 1000
 #define SEP ";"
@@ -17,11 +18,7 @@ typedef struct contact {
 
 } Contact;
 
-typedef struct list{
-	struct list *prev;
-	struct list *next;
-	 struct contact *data;
-}List;
+Contact* contact_from_buffer (char *buffer);
 
 int main (int argc, char **argv) {
 
@@ -36,7 +33,7 @@ int main (int argc, char **argv) {
     printf ("Error opening file\n");
     //error
   }
-
+  List *mylist = NULL;
   while (!feof (file)) {
     c = fgetc (file);
 
@@ -46,51 +43,42 @@ int main (int argc, char **argv) {
     if (c == '\n') {					// c ist ein Int wie kann man es direkt mit einem char vergleichen???
       buffer[zaehler] = '\0';
 
-      List *mylist;
-      
-
       if (zeilenNummer != 0) {
-        //printf ("%s", buffer);
 
-        //sscanf(buffer, "%i;%s;%s", &contact.index, contact.name, contact.telefonnumber);
-        
-        char *token;
-       // char *currentToken;
-        int tokenZaehler = 0;
-        
-        mylist = malloc(sizeof(List));
-        mylist->data = malloc(sizeof(Contact));
+        Contact *contact = contact_from_buffer (buffer);
+        mylist = insert (mylist, contact);
 
-        token = strtok (buffer, SEP);
-
-        while (token != NULL) {
-          if( tokenZaehler == 0) {
-            struct contact* contact1 = mylist->data;
-            sscanf(token, "%i", &(contact1->index));
-          }
-          if( tokenZaehler == 1) {
-            sscanf(token, "%ms", &(mylist->data->name));
-          }
-          if( tokenZaehler == 2) {
-            mylist->data->telefonnumber = malloc (strlen (token));
-            sscanf(token, "%s", (mylist->data->telefonnumber));
-          }
-          tokenZaehler++;
-
-          token = strtok (NULL, SEP);
-       }
-        mylist->next = NULL;
-        mylist->prev = mylist;
-        printf("%i %s %s\n", mylist->data->index, mylist->data->name, mylist->data->telefonnumber);
+        printf("%i %s %s\n", contact->index, contact->name, contact->telefonnumber);
       }
       zaehler = 0;
       zeilenNummer++;
-    
     }
- 
   }
 
   fclose (file);
 
   return 0;
+}
+
+Contact* contact_from_buffer (char *buffer) {
+  char *token;
+  int tokenZaehler = 0;
+  struct contact *contact = malloc(sizeof(Contact));
+  token = strtok (buffer, SEP);
+  while (token != NULL) {
+    if( tokenZaehler == 0) {
+      sscanf(token, "%i", &(contact->index));
+    }
+    if( tokenZaehler == 1) {
+      sscanf(token, "%ms", &(contact->name));
+    }
+    if( tokenZaehler == 2) {
+      contact->telefonnumber = malloc (strlen (token));
+      sscanf(token, "%s", (contact->telefonnumber));
+    }
+    tokenZaehler++;
+
+    token = strtok (NULL, SEP);
+  }
+  return contact;
 }
