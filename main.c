@@ -20,7 +20,7 @@ typedef struct contact {
 typedef struct list{
 	struct list *prev;
 	struct list *next;
-	 struct contact* data;	
+	 struct contact *data;
 }List;
 
 int main (int argc, char **argv) {
@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
 
     if (c == '\n') {					// c ist ein Int wie kann man es direkt mit einem char vergleichen???
       buffer[zaehler] = '\0';
-    //  Contact *contact;
+
       List *mylist;
       
 
@@ -59,26 +59,29 @@ int main (int argc, char **argv) {
         int tokenZaehler = 0;
         
         mylist = malloc(sizeof(List));
+        mylist->data = malloc(sizeof(Contact));
+
         token = strtok (buffer, SEP);
 
         while (token != NULL) {
           if( tokenZaehler == 0) {
-            sscanf(token, "%i", &(List->data->index)); 
+            struct contact* contact1 = mylist->data;
+            sscanf(token, "%i", &(contact1->index));
           }
           if( tokenZaehler == 1) {
-            sscanf(token, "%ms", &(List->data->name); 
+            sscanf(token, "%ms", &(mylist->data->name));
           }
           if( tokenZaehler == 2) {
-            contact->telefonnumber = malloc (strlen (token));
-            sscanf(token, "%s", (List->data->telefonnumber);
+            mylist->data->telefonnumber = malloc (strlen (token));
+            sscanf(token, "%s", (mylist->data->telefonnumber));
           }
           tokenZaehler++;
 
           token = strtok (NULL, SEP);
        }
-        List->next = mylist;
-        List->prev = NULL;
-        printf("%i %s %s\n", contact->index, contact->name, contact->telefonnumber);
+        mylist->next = NULL;
+        mylist->prev = mylist;
+        printf("%i %s %s\n", mylist->data->index, mylist->data->name, mylist->data->telefonnumber);
       }
       zaehler = 0;
       zeilenNummer++;
