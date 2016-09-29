@@ -19,6 +19,7 @@ typedef struct contact {
 } Contact;
 
 Contact* contact_from_buffer (char *buffer);
+void print_table (List *mylist);
 
 int main (int argc, char **argv) {
 
@@ -47,13 +48,14 @@ int main (int argc, char **argv) {
 
         Contact *contact = contact_from_buffer (buffer);
         mylist = insert (mylist, contact);
-
-        printf("%i %s %s\n", contact->index, contact->name, contact->telefonnumber);
       }
       zaehler = 0;
       zeilenNummer++;
     }
   }
+
+  // print table
+  print_table (mylist);
 
   fclose (file);
 
@@ -76,9 +78,38 @@ Contact* contact_from_buffer (char *buffer) {
       contact->telefonnumber = malloc (strlen (token));
       sscanf(token, "%s", (contact->telefonnumber));
     }
+
     tokenZaehler++;
 
     token = strtok (NULL, SEP);
   }
   return contact;
 }
+
+void print_table (List *mylist){
+  while(mylist->prev !=NULL)
+  {
+    mylist = mylist->prev;
+  }
+  printf("================================================================\n");
+  printf("Index        | Name        |Tel            |\n");
+  while(mylist != NULL)
+  {
+   Contact *contact = (Contact*) mylist->data;
+    printf("%10i| %-20s|%-25s|\n",contact->index, contact->name, contact->telefonnumber);
+    mylist = mylist->next;
+  }
+  printf("================================================================\n");
+
+}
+
+
+/**
+
+ ==================================
+ | Index |    Name     |   Tel    |
+ |     1 | Peter       | 12234    |
+ |     .. | ..         | ..       |
+ ==================================
+
+*/

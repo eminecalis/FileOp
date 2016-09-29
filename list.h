@@ -11,5 +11,6 @@ typedef struct list{
   void        *data;
 }List;
 
-List *insert (List *list, void *contact);
+List *insert (List *list, void *data);
+
 #endif //FILEOP_LIST_H

@@ -4,7 +4,7 @@
 
 #include "list.h"
 #include <stdlib.h>
-List *insert (List *list, void *contact) {
+List *insert (List *list, void *data) {
   List *item;
   item = malloc(sizeof(List));
   item->next =NULL;
@@ -14,7 +14,7 @@ List *insert (List *list, void *contact) {
 
     list->next = item;
   }
-  item->data = contact;
+  item->data = data;
   return item;
 
 }
