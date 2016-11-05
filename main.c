@@ -16,7 +16,7 @@ typedef struct contact {
   char *name;
   char *telefonnumber;
 
-} Contact;
+}Contact;
 
 Contact* contact_from_buffer (char *buffer);
 void print_table (List *mylist);
@@ -61,7 +61,11 @@ int main (int argc, char **argv) {
 
   return 0;
 }
-
+void print_contact(List *mylist)
+{
+	Contact *contact =(Contact*) mylist->data;
+	printf("%10i| %-20s|%-25s|\n",contact->index, contact->name, contact->telefonnumber);
+}
 Contact* contact_from_buffer (char *buffer) {
   char *token;
   int tokenZaehler = 0;
@@ -87,18 +91,10 @@ Contact* contact_from_buffer (char *buffer) {
 }
 
 void print_table (List *mylist){
-  while(mylist->prev !=NULL)
-  {
-    mylist = mylist->prev;
-  }
+  mylist = list_find_first(mylist);
   printf("================================================================\n");
-  printf("Index        | Name        |Tel            |\n");
-  while(mylist != NULL)
-  {
-   Contact *contact = (Contact*) mylist->data;
-    printf("%10i| %-20s|%-25s|\n",contact->index, contact->name, contact->telefonnumber);
-    mylist = mylist->next;
-  }
+  printf("Index     | Name                |Tel                      |\n");
+  list_for_each(mylist,print_contact);
   printf("================================================================\n");
 
 }

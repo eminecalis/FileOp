@@ -13,4 +13,10 @@ typedef struct list{
 
 List *insert (List *list, void *data);
 
+List *list_find_first(List *list);
+
+void list_for_each(List *mylist, void (*callback) (List *mylist));
+
+
+
 #endif //FILEOP_LIST_H

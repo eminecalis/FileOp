@@ -18,3 +18,22 @@ List *insert (List *list, void *data) {
   return item;
 
 }
+
+List *list_find_first(List *list)
+{
+	while(list->prev!= NULL)
+	{
+		list = list->prev;
+	}
+	return list;
+}
+
+void list_for_each(List *list, void (*callback) (List *mylist))
+{
+	while(list != NULL)
+  {   
+   callback(list);
+   list = list->next;
+  }	
+
+}
