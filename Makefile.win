@@ -1,8 +1,8 @@
 # Project: Project1
-# Makefile created by Dev-C++ 5.11
+# Makefile created by Dev-C++ 5.9.2
 
-CPP      = g++.exe -D__DEBUG__
-CC       = gcc.exe -D__DEBUG__
+CPP      = g++.exe
+CC       = gcc.exe
 WINDRES  = windres.exe
 OBJ      = main.o list.o
 LINKOBJ  = main.o list.o

@@ -61,11 +61,47 @@ int main (int argc, char **argv) {
 
   return 0;
 }
+List *compare_by_index(List *mylist, void *value)
+{	
+	int index = *(int*) value;
+	Contact *contact =(Contact*) mylist->data;
+	if(index == contact->index)
+	{
+		return mylist;
+		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
+	}	
+		
+}
+
+List *compare_by_name(List *mylist, void *value)
+{
+	char *name = (char*) value;
+	Contact *contact =(Contact*) mylist->data;	
+	if(strstr(contact->name,name))
+	{
+		return mylist;
+		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
+	}	
+}
+
+List *compare_by_number(List *mylist, void *value)
+{
+	char *telefonnumber =(char*)value;
+	Contact *contact =(Contact*) mylist->data;
+	if(strstr(contact->telefonnumber,telefonnumber))
+	{
+		return mylist;
+		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
+	}	
+		
+}
+
 void print_contact(List *mylist)
 {
 	Contact *contact =(Contact*) mylist->data;
 	printf("%10i| %-20s|%-25s|\n",contact->index, contact->name, contact->telefonnumber);
 }
+
 Contact* contact_from_buffer (char *buffer) {
   char *token;
   int tokenZaehler = 0;
@@ -98,6 +134,7 @@ void print_table (List *mylist){
   printf("================================================================\n");
 
 }
+
 
 
 /**
