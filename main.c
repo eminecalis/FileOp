@@ -20,6 +20,8 @@ typedef struct contact {
 
 Contact* contact_from_buffer (char *buffer);
 void print_table (List *mylist);
+List *compare_by_index(List *mylist, void *value);
+List *compare_by_string(List *mylist, void *value);
 
 int main (int argc, char **argv) {
 
@@ -56,7 +58,12 @@ int main (int argc, char **argv) {
 
   // print table
   print_table (mylist);
-
+  
+  //list search
+  int value = 1;
+  
+  mylist = list_search(mylist,compare_by_index,value);
+  
   fclose (file);
 
   return 0;
@@ -67,34 +74,30 @@ List *compare_by_index(List *mylist, void *value)
 	Contact *contact =(Contact*) mylist->data;
 	if(index == contact->index)
 	{
-		return mylist;
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
+		return mylist;
 	}	
 		
 }
 
-List *compare_by_name(List *mylist, void *value)
+List *compare_by_string(List *mylist, void *value)
 {
-	char *name = (char*) value;
+	char *string = (char*) value;
 	Contact *contact =(Contact*) mylist->data;	
-	if(strstr(contact->name,name))
+	if(strstr(contact->name,string))
 	{
-		return mylist;
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
-	}	
-}
-
-List *compare_by_number(List *mylist, void *value)
-{
-	char *telefonnumber =(char*)value;
-	Contact *contact =(Contact*) mylist->data;
-	if(strstr(contact->telefonnumber,telefonnumber))
+		return mylist;
+	}
+	else if (strstr(contact->telefonnumber,string))
 	{
-		return mylist;
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
-	}	
+		return mylist;
 		
+	}
 }
+		
+
 
 void print_contact(List *mylist)
 {

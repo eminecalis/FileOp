@@ -38,19 +38,19 @@ void list_for_each(List *list, void (*callback) (List *list))
 
 }
 
-List *list_search (List *list, void (*compare_function) (List *list, void *value), void *compare_value) 
+List *list_search (List *list, List* (*compare_function) (List *list, void *value), void *compare_value) 
 {
 	while(list != NULL)
 	{
 		if(isdigit(compare_value))
 		{
-			list = compare_by_index(list,compare_value);
+			int int_value = *(int*) compare_value; 
+			compare_function(list,int_value);
 		}
-		else
-		{	if(compare_by_name(list,compare_value))		
-			list = compare_by_name(list,compare_value);
-			elseif(compare_by_telefonnumber(list,compare_value));
-			list = compare_by_telefonnumber(list,compare_value);
+		else {
+			char* string_value = (char*) compare_value;
+			compare_function(list,string_value);
+			
 		}
 	}
 }
