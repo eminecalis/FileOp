@@ -54,3 +54,18 @@ List *list_search (List *list, List* (*compare_function) (List *list, void *valu
 		}
 	}
 }
+
+void list_free_all(List *list, void (*free_function)(List *list))
+{
+	list = list_find_first(list);
+	while(list != NULL)
+	{	
+	/*	free(list->prev);	
+		free_function(list);
+		free(list->data);		
+		free(list->next);*/
+		free(list);    
+		list = list->next;	
+	}
+
+}

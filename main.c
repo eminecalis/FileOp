@@ -22,6 +22,8 @@ Contact* contact_from_buffer (char *buffer);
 void print_table (List *mylist);
 List *compare_by_index(List *mylist, void *value);
 List *compare_by_string(List *mylist, void *value);
+void free_contact (List *mylist);
+
 
 int main (int argc, char **argv) {
 
@@ -62,12 +64,25 @@ int main (int argc, char **argv) {
   //list search
   int value = 1;
   
-  mylist = list_search(mylist,compare_by_index,value);
-  
+   mylist = list_search(mylist,compare_by_index,value);
+
+  //free list
+   list_free_all(mylist,free_contact);
+
   fclose (file);
 
   return 0;
 }
+
+void free_contact (List *mylist)
+{
+	Contact *contact =(Contact*) mylist->data;
+/*	free(contact->index);
+    free(contact->name);
+	free(contact->telefonnumber);*/
+	free(contact);	
+}
+
 List *compare_by_index(List *mylist, void *value)
 {	
 	int index = *(int*) value;
@@ -75,7 +90,7 @@ List *compare_by_index(List *mylist, void *value)
 	if(index == contact->index)
 	{
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
-		return mylist;
+		return 0;
 	}	
 		
 }
