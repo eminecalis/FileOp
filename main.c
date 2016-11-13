@@ -23,19 +23,12 @@ void print_table (List *mylist);
 List *compare_by_index(List *mylist, void *value);
 List *compare_by_string(List *mylist, void *value);
 void free_contact (List *mylist);
-/* Probier mal die Schleife in der main Funktion etwas aufzuraeumen, und
-zwar in dem du den Code der eine Zeile in einen Buffer ausliest in eine
-eigene Funktion auslagerst, z.b. read_line (file, buffer), die funktion
-liest aus dem file pointer und schreibt in den buffer, das sollte die
-while schleife deutlich vereinfachen:
-
-   while (read_line (file, buffer) != 0) {...}
-*/
 
 int main (int argc, char **argv) {
 
   FILE *file;
   char buffer[MAX];
+  char *buffer_ptr = buffer;
   int zeilenNummer = 0;
  // Contact *contact;
   
@@ -46,12 +39,13 @@ int main (int argc, char **argv) {
     //error
   }
   List *mylist = NULL;
-  while (read_line(file,buffer) != 0) {
-  	read_line(file, buffer);
+
+  while (read_line(file,buffer_ptr) != NULL) {
+  	buffer_ptr = read_line(file, buffer_ptr);
 
     if (zeilenNummer != 0) {
 
-        Contact *contact = contact_from_buffer (buffer);
+        Contact *contact = contact_from_buffer (buffer_ptr);
         mylist = insert (mylist, contact);
       }
       
@@ -75,22 +69,23 @@ int main (int argc, char **argv) {
   return 0;
 }
 
-void read_line(FILE *file, char *buffer)
+char* read_line(FILE *file, char *buffer)
 {
 	int c, zaehler = 0;
 	while (!feof (file)) {
     c = fgetc (file);
 
-    buffer[zaehler] = (char) c;
+    *(buffer+zaehler) = (char) c;
     zaehler++;
 
     if (c == '\n') 
 	{					
-      buffer[zaehler] = '\0';
+      *(buffer+zaehler) = '\0';
       zaehler = 0;     
 	}
 	 
   }
+  return buffer;
 }
 void free_contact (List *mylist)
 {
