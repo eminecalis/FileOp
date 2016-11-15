@@ -38,34 +38,36 @@ void list_for_each(List *list, void (*callback) (List *list))
 
 }
 
-List *list_search (List *list, List* (*compare_function) (List *list, void *value), void *compare_value) 
+List *list_search (List *list, int (*compare_function) (List *list, void *value), void *compare_value)
 {
+	list = list_find_first (list);
+
 	while(list != NULL)
 	{
-		if(isdigit(compare_value))
+		if(compare_function(list, compare_value) == 0)
 		{
-			int int_value = *(int*) compare_value; 
-			compare_function(list,int_value);
+			return list;
 		}
-		else {
-			char* string_value = (char*) compare_value;
-			compare_function(list,string_value);
-			
-		}
+
+		list = list->next;
 	}
+	return NULL;
 }
 
-void list_free_all(List *list, void (*free_function)(List *list))
+void list_free_all(List *list, void (*free_function)(void *data))
 {
 	list = list_find_first(list);
 	while(list != NULL)
-	{	
-	/*	free(list->prev);	
-		free_function(list);
-		free(list->data);		
-		free(list->next);*/
-		free(list);    
-		list = list->next;	
+	{
+		List *temp = list->next;
+		free_function(list->data);
+		list->data = NULL;
+		list->prev = NULL;
+		list->next = NULL;
+		free(list);
+
+
+		list = temp;
 	}
 
 }

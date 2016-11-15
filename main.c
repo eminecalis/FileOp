@@ -20,9 +20,10 @@ typedef struct contact {
 
 Contact* contact_from_buffer (char *buffer);
 void print_table (List *mylist);
-List *compare_by_index(List *mylist, void *value);
-List *compare_by_string(List *mylist, void *value);
-void free_contact (List *mylist);
+int compare_by_index(List *mylist, void *value);
+int compare_by_string(List *mylist, void *value);
+void free_contact (void *data);
+char *read_line (FILE *file, char *buffer);
 
 int main (int argc, char **argv) {
 
@@ -36,16 +37,15 @@ int main (int argc, char **argv) {
   file = fopen ("phonebook.csv", "r+");
   if (file == NULL) {
     printf ("Error opening file\n");
-    //error
+    exit(EXIT_FAILURE);
   }
   List *mylist = NULL;
 
-  while (read_line(file,buffer_ptr) != NULL) {
-  	buffer_ptr = read_line(file, buffer_ptr);
+  while (read_line(file,buffer) != NULL) {
 
     if (zeilenNummer != 0) {
 
-        Contact *contact = contact_from_buffer (buffer_ptr);
+        Contact *contact = contact_from_buffer (buffer);
         mylist = insert (mylist, contact);
       }
       
@@ -57,46 +57,49 @@ int main (int argc, char **argv) {
   print_table (mylist);
   
   //list search
-/*  int value = 1;
+  int value = 1;
   
-   mylist = list_search(mylist,compare_by_index,value);
+   mylist = list_search(mylist,compare_by_index,&value);
 
   //free list
-   list_free_all(mylist,free_contact);*/
+   list_free_all(mylist,free_contact);
 
   fclose (file);
 
   return 0;
 }
 
-char* read_line(FILE *file, char *buffer)
-{
-	int c, zaehler = 0;
-	while (!feof (file)) {
+char *read_line (FILE *file, char *buffer) {
+  int c, zaehler = 0;
+  while (!feof (file)) {
     c = fgetc (file);
 
-    *(buffer+zaehler) = (char) c;
+    *(buffer + zaehler) = (char) c;
     zaehler++;
 
-    if (c == '\n') 
-	{					
-      *(buffer+zaehler) = '\0';
-      zaehler = 0;     
-	}
-	 
+    if (c == '\n') {
+      *(buffer + zaehler) = '\0';
+
+      return buffer;
+
+    }
+
   }
-  return buffer;
-}
-void free_contact (List *mylist)
-{
-	Contact *contact =(Contact*) mylist->data;
-/*	free(contact->index);
-    free(contact->name);
-	free(contact->telefonnumber);*/
-	free(contact);	
+  return NULL;
 }
 
-List *compare_by_index(List *mylist, void *value)
+void free_contact (void *data)
+{
+	Contact *contact =(Contact*) data;
+  free(contact->name);
+  contact->name = NULL;
+	free(contact->telefonnumber);
+  contact->telefonnumber = NULL;
+	free(contact);
+
+}
+
+int compare_by_index(List *mylist, void *value)
 {	
 	int index = *(int*) value;
 	Contact *contact =(Contact*) mylist->data;
@@ -105,24 +108,25 @@ List *compare_by_index(List *mylist, void *value)
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
 		return 0;
 	}	
-		
+		return 1;
 }
 
-List *compare_by_string(List *mylist, void *value)
+int compare_by_string(List *mylist, void *value)
 {
 	char *string = (char*) value;
 	Contact *contact =(Contact*) mylist->data;	
-	if(strstr(contact->name,string))
+	if(strstr(contact->name,string) == 0)
 	{
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
-		return mylist;
+		return 0;
 	}
 	else if (strstr(contact->telefonnumber,string))
 	{
 		printf("%i	%s	%s", contact->index, contact->name, contact ->telefonnumber);
-		return mylist;
+		return 0;
 		
 	}
+  return 1;
 }
 		
 

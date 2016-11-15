@@ -17,8 +17,8 @@ List *list_find_first(List *list);
 
 void list_for_each(List *list, void (*callback) (List *list));
 
-List *list_search (List *list, List* (*compare_function) (List *list, void *value), void *compare_value);
+List *list_search (List *list, int (*compare_function) (List *list, void *value), void *compare_value);
 
-void list_free_all(List *list, void (*free_function)(List *list));
+void list_free_all(List *list, void (*free_function)(void *data));
 
 #endif //FILEOP_LIST_H
