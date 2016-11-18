@@ -16,7 +16,9 @@ include_directories(${GLIB_INCLUDE_DIRS}) # -I
 
 link_libraries(${GLIB_LIBRARIES}) # -l
 
-link_directories(${}) # -L
+# this is not strictly necessary for glib because the compiled library is
+# installed into a standard path that gcc can find by default
+link_directories(${GLIB_LIBRARY_DIRS}) # -L
 
 set (FILE_OP_FILES main.c list.c list.h)
 
