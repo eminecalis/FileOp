@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 #include "list.h"
 
 #define MAX 1000
@@ -32,13 +33,31 @@ int main (int argc, char **argv) {
   char *buffer_ptr = buffer;
   int zeilenNummer = 0;
  // Contact *contact;
+
+  if(argc <= 1)
+  {
+    printf("program needs path\n");
+    exit(EXIT_FAILURE);
+  }
+
+  char *path;
+  char filename []= "phonebook.csv";
+//  size_t argumentLength = strlen(argv[1]);
+//  size_t filenamLength = strlen(filename);
+//  path = malloc(argumentLength + filenamLength + 1);
+//  strncat(path, argv[1], argumentLength);
+//  strncat(path, filename, filenamLength);
+
+  path = g_build_filename (argv[1],
+                           filename,
+                           NULL);
   
-  
-  file = fopen ("phonebook.csv", "r+");
+  file = fopen (path, "r+");
   if (file == NULL) {
     printf ("Error opening file\n");
     exit(EXIT_FAILURE);
   }
+  g_free (path);
   List *mylist = NULL;
 
   while (read_line(file,buffer) != NULL) {
