@@ -21,5 +21,7 @@ link_libraries(${GLIB_LIBRARIES}) # -l
 link_directories(${GLIB_LIBRARY_DIRS}) # -L
 
 set (FILE_OP_FILES main.c list.c list.h)
+set (GLIB_FILES glib-practice/main.c)
 
 add_executable(fileop ${FILE_OP_FILES})
+add_executable(glibpractice ${GLIB_FILES})
