@@ -9,6 +9,8 @@ typedef struct contact {
   char *telefonnumber;
 }Contact;
 
+
+
 int main() {
   Contact *contact;
   char buffer[LENGTH];
@@ -17,8 +19,10 @@ int main() {
 
   while(1)
   {
+    int index = 0;
     contact = malloc (sizeof(Contact));
     mylist = g_list_append (mylist,contact);
+    contact->index = index;
     printf("Name: \n");
     fgets(buffer,LENGTH,stdin);
     contact->name = g_strdup (buffer);
@@ -32,10 +36,16 @@ int main() {
     {
       break;
     }
+    index++;
+  }
+  while(mylist != NULL)
+  {
+    fgets(buffer,LENGTH,stdin);
+    mylist = g_list_sort(mylist,GCompareFunc(mylist,buffer));
 
+    mylist = mylist->next;
   }
 
-
-
-
+return (EXIT_SUCCESS);
 }
+

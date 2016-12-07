@@ -1,0 +1,4 @@
+/home/emine/ClionProjects/FileOp-master/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/emine/ClionProjects/FileOp-master/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/emine/ClionProjects/FileOp-master/cmake-build-debug/CMakeFiles/glibpractice.dir
+/home/emine/ClionProjects/FileOp-master/cmake-build-debug/CMakeFiles/fileop.dir
