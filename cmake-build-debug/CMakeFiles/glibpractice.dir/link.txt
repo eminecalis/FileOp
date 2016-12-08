@@ -1,1 +1,0 @@
-/usr/bin/cc   --std=c11 -g   CMakeFiles/glibpractice.dir/glib-practice/main.c.o  -o glibpractice -lglib-2.0 
