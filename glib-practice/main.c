@@ -14,6 +14,8 @@ typedef struct contact {
 gint sort_by_name (gconstpointer a, gconstpointer contact2);
 void print_table (GList *mylist);
 void write_contact (gpointer data, gpointer user_data);
+gint find_contact(gconstpointer data, gconstpointer userdata);
+void free_contact (void *data);
 
 int main(int argc, char *argv[]) {
 
@@ -21,7 +23,7 @@ int main(int argc, char *argv[]) {
   char buffer[LENGTH];
 
   GList *mylist = NULL;
-  int index = 0;
+  int index = 1;
   while(1)
   {
 
@@ -45,20 +47,58 @@ int main(int argc, char *argv[]) {
   }
 
     //fgets(buffer,LENGTH,stdin);
-    mylist = g_list_sort(mylist, sort_by_name);
-    FILE *file = fopen(argv[1],"w+");
-    g_list_foreach(mylist,write_contact,file);
-    fclose (file);
-
     print_table (mylist);
+    printf("Sollte Inhalt geloescht werden [J/n]: \n");
+    fgets(buffer,LENGTH, stdin);
+    int deletecontacts = (!g_strcmp0(buffer,"J\n")) || (!g_strcmp0 (buffer,"j\n")) || (!g_strcmp0 (buffer,"\n"));
+    if(deletecontacts)
+    {
+      int suchindex;
+      printf("Welcher Index sollte geloescht werden?: ");
+      scanf("%i", &suchindex);
+      GList *deleteItem = g_list_find_custom (mylist,&suchindex,find_contact);
+      Contact *deleteContact = deleteItem->data;
+      g_list_remove (mylist,deleteContact);
+      free_contact(deleteContact);
+    }
+   mylist = g_list_sort(mylist, sort_by_name);
+   FILE *file = fopen(argv[1],"w+");
+   g_list_foreach(mylist,write_contact,file);
+   fclose (file);
+  return (EXIT_SUCCESS);
+}
+void free_contact (void *data)
+{
+  Contact *contact =(Contact*) data;
+  free(contact->name);
+  contact->name = NULL;
+  free(contact->telefonnumber);
+  contact->telefonnumber = NULL;
+  free(contact);
 
-return (EXIT_SUCCESS);
+}
+
+gint find_contact(gconstpointer data, gconstpointer userdata)
+{
+  Contact *contact = (Contact *) data;
+  int index = *(int *) userdata;
+  if(contact->index == index)
+  {
+    return 0;
+  }
+  else
+    return 1;
 }
 void write_contact (gpointer data, gpointer user_data)
 {
-  char *name = "Hello\n";
+  Contact *contact = (Contact *) data;
   FILE *file = user_data;
-  fwrite(name,strlen(name),1,file);
+  //char line[80];
+  //int length = snprintf(line, 80, "%i;%s;%s\n", contact->index, contact->name, contact->telefonnumber);
+  gchar *gline = g_strdup_printf ("%i;%s;%s\n", contact->index, contact->name, contact->telefonnumber);
+//  fwrite(line,strlen(line),1,file);
+    fwrite(gline,strlen(gline),1,file);
+    g_free(gline);
 }
 gint sort_by_name (gconstpointer a, gconstpointer b)
 {
