@@ -1,1 +1,0 @@
-/usr/bin/cc   --std=c11 -g   CMakeFiles/fileop.dir/main.c.o CMakeFiles/fileop.dir/list.c.o  -o fileop -lglib-2.0 
