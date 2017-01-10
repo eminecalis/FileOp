@@ -56,10 +56,17 @@ int main(int argc, char *argv[]) {
       int suchindex;
       printf("Welcher Index sollte geloescht werden?: ");
       scanf("%i", &suchindex);
+
       GList *deleteItem = g_list_find_custom (mylist,&suchindex,find_contact);
       Contact *deleteContact = deleteItem->data;
-      g_list_remove (mylist,deleteContact);
-      free_contact(deleteContact);
+      free_contact (deleteContact);
+      mylist = g_list_delete_link (mylist,deleteItem);
+
+   //   mylist = g_list_remove (mylist,deleteContact);
+   //   free_contact(deleteContact);
+
+
+
     }
    mylist = g_list_sort(mylist, sort_by_name);
    FILE *file = fopen(argv[1],"w+");
@@ -95,10 +102,10 @@ void write_contact (gpointer data, gpointer user_data)
   FILE *file = user_data;
   //char line[80];
   //int length = snprintf(line, 80, "%i;%s;%s\n", contact->index, contact->name, contact->telefonnumber);
-  gchar *gline = g_strdup_printf ("%i;%s;%s\n", contact->index, contact->name, contact->telefonnumber);
+  gchar *line = g_strdup_printf ("%i;%s;%s\n", contact->index, contact->name, contact->telefonnumber);
 //  fwrite(line,strlen(line),1,file);
-    fwrite(gline,strlen(gline),1,file);
-    g_free(gline);
+    fwrite(line,strlen(line),1,file);
+    g_free(line);
 }
 gint sort_by_name (gconstpointer a, gconstpointer b)
 {
