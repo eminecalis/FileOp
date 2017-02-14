@@ -25,3 +25,9 @@ set (GLIB_FILES glib-practice/main.c)
 
 add_executable(fileop ${FILE_OP_FILES})
 add_executable(glibpractice ${GLIB_FILES})
+
+set (CONTACT_GENERATOR_CLIENT
+        contact-generator/contact-client.c
+        contact-generator/contact-client.h)
+
+add_executable(contact-client ${CONTACT_GENERATOR_CLIENT})
