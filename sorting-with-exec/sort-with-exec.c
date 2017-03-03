@@ -27,14 +27,11 @@ int main(int argc, char **argv){
     close(write_pipe[PIPE_WRITE]);
     dup2(write_pipe[PIPE_READ],STDIN_FILENO);
     close (write_pipe[PIPE_READ]);
-    close (read_pipe[PIPE_READ]);
-    close (read_pipe[PIPE_WRITE]);
 
-    //fehler beim verbinden von stdout:
-    //dup2(read_pipe[PIPE_WRITE], STDOUT_FILENO);
-    //dup2(read_pipe[PIPE_WRITE], STDERR_FILENO);
-    //close(read_pipe[PIPE_READ]);
-    //close(read_pipe[PIPE_WRITE]);
+    dup2(read_pipe[PIPE_WRITE], STDOUT_FILENO);
+    dup2(read_pipe[PIPE_WRITE], STDERR_FILENO);
+    close(read_pipe[PIPE_READ]);
+    close(read_pipe[PIPE_WRITE]);
 
 //    printf("You are in child process\n");
 //    pid_t ownId = getpid();
@@ -42,16 +39,12 @@ int main(int argc, char **argv){
 //    printf("[child] Process Id of child: %d\n", ownId);
 //    printf("[child] Process Id of parent: %d\n", parentId);
 
-    //char *arguments[3];
-    //arguments[0] = "sort";
-    //arguments[1] = "-n";
-    //[2] = NULL;
     char *args[] = {"/usr/bin/sort", "-n", NULL};
     int result = execve("/usr/bin/sort", args, NULL);
 
     printf ("result: %d\n", result);
 
-    //return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
   else
   {
@@ -64,19 +57,24 @@ int main(int argc, char **argv){
     printf("[parent] Process Id of this process: %d\n", ownId);
     printf("[parent] Process Id of  parent: %d\n", parentId);
 
-    char *message = "1\n6\n3\n7\n\n";
+    char *message = "1\n6\n3\n7\n4\n5\n8\n11";
     write(write_pipe[PIPE_WRITE],message,strlen(message)+1);
+    //wir haben alles geschrieben, schreib ende schliessen
+    close (write_pipe[PIPE_WRITE]);
+
+    //warten bis der client fertig ist:
+    int status;
+    wait (&status);
+    printf ("Child exit status: %d\n", status);
 
     char buffer[1024];// = {};
     long count = read(read_pipe[PIPE_READ],buffer,1024);
     buffer[count]='\0';
-    printf("parent: %s\n", buffer);
+    printf("parents results:\n%s\n", buffer);
     close(write_pipe[PIPE_WRITE]);
     close(read_pipe[PIPE_READ]);
     //int status;
-    int status;
-    wait (&status);
-    printf ("Child exit status: %d\n", status);
+
 
 
   }
