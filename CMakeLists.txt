@@ -48,3 +48,14 @@ set (SORT_WITH_EXEC_FILES
         sorting-with-exec/sort-with-exec.h)
 
 add_executable(sorting-with-exec ${SORT_WITH_EXEC_FILES})
+
+set(CONTACT_CLIENT_FILES contact-manager/contact-client.c
+                        contact-manager/contact-client.h)
+
+set(CONTACT_GENERATOR_FILES contact-manager/contact-generator.c
+                     contact-manager/contact-generator.h)
+
+add_executable(contact-manager-client ${CONTACT_CLIENT_FILES})
+
+add_executable(contact-manager-generator ${CONTACT_GENERATOR_FILES})
+
