@@ -34,14 +34,14 @@ set (CONTACT_GENERATOR_SAMPLE_CLIENT_FILES
 add_executable(fileop ${FILE_OP_FILES})
 add_executable(glibpractice ${GLIB_FILES})
 
-add_executable(contact-generator-sample ${CONTACT_GENERATOR_SAMPLE_FILES})
-add_executable(contact-client-sample ${CONTACT_GENERATOR_SAMPLE_CLIENT_FILES})
+#add_executable(contact-generator-sample ${CONTACT_GENERATOR_SAMPLE_FILES})
+#add_executable(contact-client-sample ${CONTACT_GENERATOR_SAMPLE_CLIENT_FILES})
 
-set (CONTACT_GENERATOR_CLIENT
-        contact-generator/contact-client.c
-        contact-generator/contact-client.h)
+set (SIMPLE_PIPE_EXAMPLE
+        simple-pipe-example/simple-pipe-example.c
+        simple-pipe-example/simple-pipe-example.h)
 
-add_executable(contact-client ${CONTACT_GENERATOR_CLIENT})
+add_executable(simple-pipe-example ${SIMPLE_PIPE_EXAMPLE})
 
 set (SORT_WITH_EXEC_FILES
         sorting-with-exec/sort-with-exec.c
