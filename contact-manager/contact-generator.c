@@ -14,8 +14,6 @@
 GList *generate_contacts ();
 gint find_contact_by_name (gconstpointer data, gconstpointer userdata);
 gint find_contact_by_number (gconstpointer data, gconstpointer userdata);
-void print_contact (Contact *contact);
-
 
 int main (int argc, char *argv[])
 {
@@ -151,7 +149,4 @@ gint find_contact_by_number (gconstpointer data, gconstpointer userdata) {
   } else
     return 1;
 }
-void print_contact (Contact *contact) {
-  printf ("%i;%s;%s\n", contact->index, contact->name,
-          contact->telefonnumber);
-}
+

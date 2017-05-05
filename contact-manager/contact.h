@@ -10,4 +10,6 @@ typedef struct contact {
   char *name;
   char *telefonnumber;
 }Contact;
+
+void print_contact (Contact *contact);
 #endif //FILEOP_CONTACT_H

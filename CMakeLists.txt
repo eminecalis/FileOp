@@ -51,11 +51,11 @@ add_executable(sorting-with-exec ${SORT_WITH_EXEC_FILES})
 
 set(CONTACT_CLIENT_FILES contact-manager/contact-client.c
                         contact-manager/contact-client.h
-                        contact-manager/contact.h)
+                        contact-manager/contact.h contact-manager/contact.c)
 
 set(CONTACT_GENERATOR_FILES contact-manager/contact-generator.c
                      contact-manager/contact-generator.h
-                     contact-manager/contact.h)
+                     contact-manager/contact.h contact-manager/contact.c)
 
 add_executable(contact-manager-client ${CONTACT_CLIENT_FILES})
 
