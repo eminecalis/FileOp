@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
    enum Type {NAME, TEL};
 
    enum Type type = NAME;
-   char *command = "search_name";
+   char *command = "search_index";
 
    // send to generator
 
@@ -59,7 +59,7 @@ int main (int argc, char *argv[])
    //<data>\n
    //\n
 
-   char *data = "Peter";
+   char *data = "3";
    gchar *buffer = g_strdup_printf ("Command: %s\n%s\n",command,data);
    printf("%s\n",buffer);
    ssize_t write_elements = write(write_channel[PIPE_WRITE],buffer,strlen(buffer));

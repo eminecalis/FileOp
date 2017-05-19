@@ -14,8 +14,10 @@
 GList *generate_contacts ();
 gint find_contact_by_name (gconstpointer data, gconstpointer userdata);
 gint find_contact_by_number (gconstpointer data, gconstpointer userdata);
+gint find_contact_by_index (gconstpointer data, gconstpointer userdata);
 gboolean handle_search_name(GList *mylist);
 gboolean handle_search_number(GList *mylist);
+gboolean handle_search_index(GList *mylist);
 
 int main (int argc, char *argv[])
 {
@@ -50,26 +52,25 @@ int main (int argc, char *argv[])
 
     if (strcmp (token, "search_name") == 0) {
 
-      fprintf (stderr, "Handle Command 'search_name'\n");
-
       gboolean result = handle_search_name(mylist);
 
       if (result == FALSE) {
-          return EXIT_FAILURE;
-        } else {
-          continue;
-        }
+        fprintf (stderr, "Error in Handle Command 'search_name'\n");
+      }
 
     } else if (strcmp (token, "search_tel") == 0) {
 
       gboolean result = handle_search_number(mylist);
       if (result == FALSE) {
-       return EXIT_FAILURE;
-      } else {
-        continue;
+        fprintf (stderr, "Error in Handle Command 'search_number'\n");
       }
 
     } else if (strcmp (token, "search_index") == 0) {
+
+      gboolean result = handle_search_index (mylist);
+      if(result == FALSE) {
+        fprintf (stderr,"Error in Handle Command 'search_index'\n");
+      }
 
     } else if (strcmp (token, "exit") == 0) {
       running = 0;
@@ -78,7 +79,7 @@ int main (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-    //fflush (stdout);
+    fflush (stdout);
   }
   return EXIT_SUCCESS;
 
@@ -146,6 +147,15 @@ gint find_contact_by_number (gconstpointer data, gconstpointer userdata) {
     return 1;
 }
 
+gint find_contact_by_index (gconstpointer data, gconstpointer userdata) {
+  Contact *contact = (Contact *) data;
+  int * search_index_pointer = (int *) userdata;
+  int searched_index = *search_index_pointer;
+  if(searched_index == contact->index) {
+    return 0;
+  } else
+    return 1;
+}
 
 gboolean handle_search_name(GList *mylist)
 {
@@ -175,16 +185,49 @@ gboolean handle_search_number(GList *mylist)
   char *line = fgets (buffer, 1024, stdin);  //um zu ueberpruefen ob die
   // funktion erfolgreich beendet wurde
   if (line == NULL) {
-    printf ("Error reading input\n");
+    fprintf (stderr, "Error reading input\n");
     return FALSE;
   }
   char *token = strtok (buffer, "\n");
   GList *contact_item = g_list_find_custom (mylist, token,
                                             find_contact_by_number);
   if (contact_item == NULL) {
-    printf ("Searched number not found\n");
+    fprintf (stderr,"Searched number not found\n");
     return TRUE;
   }
   print_contact ((Contact *) contact_item->data);
+  return TRUE;
+}
+
+gboolean handle_search_index(GList *mylist)
+{
+  char buffer [1024];
+  int searched_value;
+  char *line = fgets(buffer,1024,stdin);
+  if(line == NULL)
+  {
+    fprintf (stderr,"Error reading input\n");
+    return FALSE;
+  }
+  char *token = strtok (buffer, "\n");
+
+  int *searched_value_pointer;
+  searched_value_pointer = &searched_value;
+  int test_search = sscanf(token,"%d",searched_value_pointer);
+  if(test_search == 0)
+  {
+    fprintf (stderr, "Wrong format\n");
+    return FALSE;
+  }
+
+  GList *contact_item =g_list_find_custom (mylist,searched_value_pointer,find_contact_by_index);
+
+  if(contact_item == NULL)
+  {
+    fprintf(stderr,"Searched index not found\n");
+    return TRUE;          //spielt keine Rolle ob das Element gefunden wurde,
+                          // der einzige Fehlerfall passiert bei der Eingabe!
+  }
+  print_contact ((Contact *)contact_item->data);
   return TRUE;
 }
