@@ -167,8 +167,11 @@ gboolean handle_search_name(GList *mylist)
     return FALSE;
   }
   char *token = strtok (buffer, "\n");
+
+  GCompareFunc compareFunction = find_contact_by_name;
+
   GList *contact_item = g_list_find_custom (mylist, token,
-                                            find_contact_by_name);
+                                            compareFunction);
   if (contact_item == NULL) {
     printf ("Searched name not found\n");
     return TRUE;
