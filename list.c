@@ -38,7 +38,9 @@ void list_for_each(List *list, void (*callback) (List *list))
 
 }
 
-List *list_search (List *list, int (*compare_function) (List *list, void *value), void *compare_value)
+typedef int (*CompareFunction) (List *list, void *value);
+
+List *list_search (List *list, CompareFunction compare_function, void *compare_value)
 {
 	list = list_find_first (list);
 
