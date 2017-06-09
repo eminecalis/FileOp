@@ -63,7 +63,9 @@ int main (int argc, char *argv[])
    close(read_channel[PIPE_WRITE]);
 
    enum MainType result = handle_main_menu ();
-
+   char *command;
+   char *data;
+   gchar *buffer;
    if (result == SEARCH)
    {
      enum SearchType search_result = handle_search_menu ();
@@ -72,50 +74,51 @@ int main (int argc, char *argv[])
      {
        case NAME:
          printf ("Name\n");
+             command = "search_name";
+             printf("Gesuchter Name:?");
+             scanf("%ms",&data);
          break;
        case TEL:
          printf ("Telnumber\n");
+             command = "search_tel";
+             printf("Gesuchte Telefonnummer:?");
+             scanf("%ms",&data);
          break;
        case INDEX:
          printf ("Index\n");
+             command = "search_index";
+             printf("Gesuchter Index:?");
+             scanf("%ms",&data);
          break;
        default:
          printf ("Not implemented!\n");
          break;
      }
+       // send to generator
+
+       //Command: <command>\n
+       //<data>\n
+       //\n
+       buffer = g_strdup_printf ("Command: %s\n%s\n",command,data);
+       printf("%s\n",buffer);
+       ssize_t write_elements = write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
+       //printf("%d\n",write_elements);
+       //printf("%d\n",strlen(buffer));
+       g_free (buffer);
+       char readbuffer[1024] = {};
+       read(read_channel[PIPE_READ],readbuffer,1024);
+       //readbuffer[strstr (readbuffer, "\n")];
+       printf("%s\n",readbuffer);
    }
-
-   enum SearchType type = NAME;
-
-
-   char *command;
-
-   // send to generator
-
-   //Command: <command>\n
-   //<data>\n
-   //\n
-
-   char *data;
-
-
-   gchar *buffer = g_strdup_printf ("Command: %s\n%s\n",command,data);
-   printf("%s\n",buffer);
-   ssize_t write_elements = write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
-   //printf("%d\n",write_elements);
-   //printf("%d\n",strlen(buffer));
-   g_free (buffer);
-
-   char readbuffer[1024] = {};
-   read(read_channel[PIPE_READ],readbuffer,1024);
-   //readbuffer[strstr (readbuffer, "\n")];
-   printf("%s\n",readbuffer);
-
-   //ask child to exit
-   buffer = g_strdup_printf ("Command: exit\n");
-   //printf("%s\n",buffer);
-   write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
-   g_free (buffer);
+    else if( result == EXIT)
+   {
+       command = "exit";
+       //ask child to exit
+       buffer = g_strdup_printf ("Command: %s\n", command);
+       //printf("%s\n",buffer);
+       write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
+       g_free (buffer);
+   }
 
    //wait for reply
    int status;
@@ -124,10 +127,6 @@ int main (int argc, char *argv[])
    printf ("Child process endet mit: %d\n", WEXITSTATUS (status));
    //print
  }
-
-
-
-
 
  return 0;
 }
