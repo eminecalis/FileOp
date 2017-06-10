@@ -20,8 +20,8 @@ char *commands[] = {
   "search_index"
 };
 
-enum SearchType {NAME, TEL, INDEX, SEARCH_ERROR};
-enum MainType {SEARCH, EXIT, MAIN_ERROR};
+enum SearchType {SEARCH_NAME, SEARCH_TEL, SEARCH_INDEX, SEARCH_ERROR};
+enum MainType {MAIN_SEARCH, MAIN_EXIT, MAIN_ERROR};
 
 void print_main_menu ();
 
@@ -66,51 +66,35 @@ int main (int argc, char *argv[])
    char *command;
    char *data;
    gchar *buffer;
-   if (result == SEARCH)
-   {
-     enum SearchType search_result = handle_search_menu ();
+   gboolean searchMenu = TRUE;
+   if (result == MAIN_SEARCH) {
 
-     switch (search_result)
-     {
-       case NAME:
-         printf ("Name\n");
-             command = "search_name";
-             printf("Gesuchter Name:?");
-             scanf("%ms",&data);
-         break;
-       case TEL:
-         printf ("Telnumber\n");
-             command = "search_tel";
-             printf("Gesuchte Telefonnummer:?");
-             scanf("%ms",&data);
-         break;
-       case INDEX:
-         printf ("Index\n");
-             command = "search_index";
-             printf("Gesuchter Index:?");
-             scanf("%ms",&data);
-         break;
-       default:
-         printf ("Not implemented!\n");
-         break;
-     }
+     enum SearchType search_result = handle_search_menu ();
+     while (search_result != SEARCH_ERROR) {
+
+       handle_search_result (search_result, &data, &command);
+
+
        // send to generator
 
        //Command: <command>\n
        //<data>\n
        //\n
-       buffer = g_strdup_printf ("Command: %s\n%s\n",command,data);
-       printf("%s\n",buffer);
-       ssize_t write_elements = write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
+       buffer = g_strdup_printf ("Command: %s\n%s\n", command, data);
+       printf ("%s\n", buffer);
+       ssize_t write_elements = write (write_channel[PIPE_WRITE], buffer,
+                                       strlen (buffer));
        //printf("%d\n",write_elements);
        //printf("%d\n",strlen(buffer));
        g_free (buffer);
        char readbuffer[1024] = {};
-       read(read_channel[PIPE_READ],readbuffer,1024);
+       read (read_channel[PIPE_READ], readbuffer, 1024);
        //readbuffer[strstr (readbuffer, "\n")];
-       printf("%s\n",readbuffer);
+       printf ("%s\n", readbuffer);
+       break;
+     }
    }
-    else if( result == EXIT)
+    else if( result == MAIN_EXIT)
    {
        command = "exit";
        //ask child to exit
@@ -136,12 +120,14 @@ enum SearchType handle_search_menu () {
   char *search_index;
   scanf("%ms",&search_index);
   long index =strtol(search_index,NULL,10);
+  enum SearchType result;
   if(index < 1 || index > 3)
     {
-      printf ("Wrong choice!\n");
-    }
+      result = SEARCH_ERROR;
+    }else {
+    result = (enum SearchType) (index - 1);
+  }
 
-  enum SearchType result = (enum SearchType) (index-1);
   return result;
 }
 
@@ -184,4 +170,34 @@ void print_main_menu () {
   printf("Select a number>");
 }
 
+gboolean handle_search_result (enum SearchType search_result, char **data, char **command)
+{
+  switch (search_result) {
+    case SEARCH_NAME:
+      printf ("Name\n");
+      *command = commands[SEARCH_NAME];
+      printf ("Gesuchter Name:");
+      scanf ("%ms", data);
+      break;
+    case SEARCH_TEL:
+      printf ("Telnumber\n");
+      *command = commands[SEARCH_TEL];
+      printf ("Gesuchte Telefonnummer:");
+      scanf ("%ms", data);
+      break;
+    case SEARCH_INDEX:
+      printf ("Index\n");
+      *command = commands[SEARCH_INDEX];
+      printf ("Gesuchter Index:");
+      scanf ("%ms", data);
+      break;
+    case SEARCH_ERROR:
+      printf ("Wrong selection\n");
+      return FALSE;
+    default:
+      printf ("Not implemented!\n");
+      break;
+  }
+  return TRUE;
+}
 
