@@ -1,7 +1,3 @@
-//
-// Created by sebastiangeiger on 31/03/17.
-//
-
 #include "contact-client.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +16,7 @@ char *commands[] = {
   "search_index"
 };
 
-enum SearchType {SEARCH_NAME, SEARCH_TEL, SEARCH_INDEX, SEARCH_ERROR};
+enum SearchType {SEARCH_NAME, SEARCH_TEL, SEARCH_INDEX, SEARCH_RETURN, SEARCH_ERROR};
 enum MainType {MAIN_SEARCH, MAIN_EXIT, MAIN_ERROR};
 
 void print_main_menu ();
@@ -30,6 +26,12 @@ enum MainType handle_main_menu ();
 void print_search_menu ();
 
 enum SearchType handle_search_menu ();
+
+gboolean handle_search_result (enum SearchType search_result, char **data,
+                               char **command);
+void sendRequest (int fd, char *data, char *command);
+gboolean sendMessage(int fd, char *message);
+char *receiveMessage(int fd);
 
 int main (int argc, char *argv[])
 {
@@ -59,54 +61,41 @@ int main (int argc, char *argv[])
  }
  else
  {
-   close(write_channel[PIPE_READ]);
-   close(read_channel[PIPE_WRITE]);
+    close (write_channel[PIPE_READ]);
+    close (read_channel[PIPE_WRITE]);
 
    enum MainType result = handle_main_menu ();
-   char *command;
-   char *data;
-   gchar *buffer;
-   gboolean searchMenu = TRUE;
+
    if (result == MAIN_SEARCH) {
+     gboolean search = TRUE;
+     enum SearchType search_result;
 
-     enum SearchType search_result = handle_search_menu ();
-     while (search_result != SEARCH_ERROR) {
+     while ((search_result = handle_search_menu ()) != SEARCH_RETURN) {
+       char *command;
+       char *data;
 
-       handle_search_result (search_result, &data, &command);
-
-
+       gboolean search_error = handle_search_result (search_result, &data,
+                                                     &command);
+       if (search_error == FALSE) {
+         continue;
+       }
        // send to generator
-
        //Command: <command>\n
        //<data>\n
        //\n
-       buffer = g_strdup_printf ("Command: %s\n%s\n", command, data);
-       printf ("%s\n", buffer);
-       ssize_t write_elements = write (write_channel[PIPE_WRITE], buffer,
-                                       strlen (buffer));
-       //printf("%d\n",write_elements);
-       //printf("%d\n",strlen(buffer));
-       g_free (buffer);
-       char readbuffer[1024] = {};
-       read (read_channel[PIPE_READ], readbuffer, 1024);
-       //readbuffer[strstr (readbuffer, "\n")];
+       sendRequest (write_channel[PIPE_WRITE], data, command);
+       char *readbuffer = receiveMessage (read_channel[PIPE_READ]);
        printf ("%s\n", readbuffer);
-       break;
      }
-   }
-    else if( result == MAIN_EXIT)
-   {
-       command = "exit";
-       //ask child to exit
-       buffer = g_strdup_printf ("Command: %s\n", command);
-       //printf("%s\n",buffer);
-       write(write_channel[PIPE_WRITE],buffer,strlen(buffer));
-       g_free (buffer);
+   } else if (result == MAIN_EXIT) {
+     char *command = "exit";
+     //ask child to exit
+     sendRequest (write_channel[PIPE_WRITE], NULL, command);
    }
 
    //wait for reply
    int status;
-   wait(&status);
+   wait (&status);
    //waitpid(pid, &status, 0);
    printf ("Child process endet mit: %d\n", WEXITSTATUS (status));
    //print
@@ -121,7 +110,7 @@ enum SearchType handle_search_menu () {
   scanf("%ms",&search_index);
   long index =strtol(search_index,NULL,10);
   enum SearchType result;
-  if(index < 1 || index > 3)
+  if(index < 1 || index > 4)
     {
       result = SEARCH_ERROR;
     }else {
@@ -136,6 +125,7 @@ void print_search_menu () {
   printf("[1] Search by Name.\n");
   printf("[2] Search by Telefonnumber.\n");
   printf("[3] Search by Index.\n");
+  printf("[4] Back to main menu.\n");
   printf("Select a number>");
 }
 
@@ -201,3 +191,65 @@ gboolean handle_search_result (enum SearchType search_result, char **data, char 
   return TRUE;
 }
 
+void sendRequest (int fd, char *data, char *command)
+{
+  char *buffer;
+  if(data == NULL)
+  {
+    buffer = g_strdup_printf ("Command: %s\n", command);
+  }
+  else
+  {
+    buffer = g_strdup_printf ("Command: %s\n%s\n", command, data);
+  }
+   sendMessage(fd, buffer);
+   g_free (buffer);
+}
+
+gboolean sendMessage(int fd, char *buffer)
+{
+  ssize_t write_elements = write (fd, buffer,strlen (buffer));
+  if(write_elements != strlen(buffer))
+  {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+char *receiveMessage(int fd)
+{
+    const int CHUNK_SIZE = 1024;
+
+    size_t buffer_size = CHUNK_SIZE;
+    char *buffer = realloc (NULL, buffer_size);
+
+    char *current_buffer = buffer;
+    ssize_t count = 0;
+    ssize_t total_read = 0;
+
+    while ((count = read (fd, current_buffer, 1)) > 0)
+    {
+      total_read = total_read + count;
+      current_buffer = current_buffer + count;
+      current_buffer[0] = '\0';
+
+      if (total_read == 1 && current_buffer[-1] == '\n')
+      {
+        return buffer;
+      }
+
+      if (total_read > 1 && current_buffer[-1] == '\n' && current_buffer[-2] == '\n')
+      {
+        return buffer;
+      }
+
+      buffer_size = buffer_size + count;
+      buffer = realloc (buffer, buffer_size);
+    }
+
+  if (count == -1) {
+    free (buffer);
+    return NULL;
+  }
+    return buffer;
+}
